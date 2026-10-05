@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jogos de Galera - Party Night</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        party: {
+                            bg: '#090714',
+                            card: '#141029',
+                            pink: '#ff007f',
+                            cyan: '#00f3ff',
+                            purple: '#9d4edd',
+                            amber: '#ffb703',
+                        }
+                    },
+                    boxShadow: {
+                        'neon-pink': '0 0 20px rgba(255, 0, 127, 0.4), 0 0 40px rgba(255, 0, 127, 0.2)',
+                        'neon-cyan': '0 0 20px rgba(0, 243, 255, 0.4), 0 0 40px rgba(0, 243, 255, 0.2)',
+                        'neon-purple': '0 0 20px rgba(157, 78, 221, 0.4), 0 0 40px rgba(157, 78, 221, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #090714;
+            background-image: 
+                radial-gradient(at 10% 10%, rgba(255, 0, 127, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(0, 243, 255, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(157, 78, 221, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: #ffffff;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(20, 16, 41, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(30, 24, 60, 0.8), rgba(15, 12, 32, 0.9));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Animated Glowing Borders */
+        .glow-pink { border-color: rgba(255, 0, 127, 0.6); box-shadow: 0 0 25px rgba(255, 0, 127, 0.3); }
+        .glow-cyan { border-color: rgba(0, 243, 255, 0.6); box-shadow: 0 0 25px rgba(0, 243, 255, 0.3); }
+        .glow-purple { border-color: rgba(157, 78, 221, 0.6); box-shadow: 0 0 25px rgba(157, 78, 221, 0.3); }
+
+        /* Card 3D Perspective & Animations */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .card-inner {
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .card-swipe-next {
+            animation: swipeNext 0.4s ease forwards;
+        }
+
+        .card-swipe-prev {
+            animation: swipePrev 0.4s ease forwards;
+        }
+
+        @keyframes swipeNext {
+            0% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+            50% { transform: translateX(120%) rotate(15deg) scale(0.9); opacity: 0; }
+            51% { transform: translateX(-120%) rotate(-15deg) scale(0.9); opacity: 0; }
+            100% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+        }
+
+        @keyframes swipePrev {
+            0% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+            50% { transform: translateX(-120%) rotate(-15deg) scale(0.9); opacity: 0; }
+            51% { transform: translateX(120%) rotate(15deg) scale(0.9); opacity: 0; }
+            100% { transform: translateX(0) rotate(0deg) scale(1); opacity: 1; }
+        }
+
+        /* Pulse glow animation for CTA buttons */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 0, 127, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 0, 127, 0.9); }
+        }
+
+        .animate-pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #090714; }
+        ::-webkit-scrollbar-thumb { background: #32255d; border-radius: 10px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between font-sans antialiased overflow-x-hidden selection:bg-party-pink selection:text-white">
+
+    <!-- Top Header Navigation -->
+    <header class="w-full glass-panel sticky top-0 z-40 px-4 py-3 border-b border-white/10">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2 cursor-pointer" onclick="app.showHome()">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-party-pink to-party-purple flex items-center justify-center text-white font-black text-xl shadow-neon-pink">
+                    🔥
+                </div>
+                <div>
+                    <h1 class="text-lg font-black tracking-wider bg-gradient-to-r from-party-pink via-party-purple to-party-cyan bg-clip-text text-transparent uppercase leading-none">
+                        Party Night
+                    </h1>
+                    <span class="text-[10px] text-gray-400 font-medium tracking-widest uppercase">Jogos de Galera</span>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+                <!-- Sound Toggle -->
+                <button id="soundToggleBtn" onclick="app.toggleSound()" class="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-gray-300 hover:text-white hover:border-party-cyan transition-all" title="Ligar/Desligar Som">
+                    <i id="soundIcon" class="fas fa-volume-up text-party-cyan text-sm"></i>
+                </button>
+                <!-- Add Custom Cards Button -->
+                <button onclick="app.openCustomModal()" class="w-9 h-9 rounded-xl glass-panel flex items-center justify-center text-gray-300 hover:text-white hover:border-party-pink transition-all" title="Minhas Perguntas">
+                    <i class="fas fa-plus text-party-pink text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 w-full max-w-md mx-auto px-4 py-4 flex flex-col justify-center items-center relative z-10">
+
+        <!-- VIEW 1: HOME MODE SELECTION -->
+        <section id="homeView" class="w-full space-y-4 animate-fade-in">
+            <div class="text-center my-2">
+                <span class="inline-block px-3 py-1 text-xs font-semibold uppercase tracking-widest text-party-cyan bg-party-cyan/10 rounded-full border border-party-cyan/30 mb-2">
+                    🎮 Escolha o Jogo
+                </span>
+                <h2 class="text-2xl font-black text-white">Qual é a vibe da festa hoje?</h2>
+                <p class="text-xs text-gray-400 mt-1">Reúna a galera no círculo, pegue os copos e escolha um modo abaixo!</p>
+            </div>
+
+            <!-- Mode 1: Eu Nunca -->
+            <div onclick="app.selectMode('eununca')" class="glass-card rounded-2xl p-5 border border-party-pink/30 hover:border-party-pink cursor-pointer transform hover:-translate-y-1 transition-all group relative overflow-hidden shadow-neon-pink/20">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-party-pink/10 rounded-full blur-xl group-hover:bg-party-pink/20 transition-all"></div>
+                <div class="flex items-start justify-between relative z-10">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-party-pink/20 border border-party-pink/40 flex items-center justify-center text-party-pink text-2xl group-hover:scale-110 transition-transform">
+                            🙈
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-white group-hover:text-party-pink transition-colors">Eu Nunca...</h3>
+                            <p class="text-xs text-gray-400">Revelações e segredos. Quem já fez, bebe!</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-500 group-hover:text-party-pink group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div class="mt-3 flex space-x-2 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="px-2 py-0.5 rounded bg-white/10 text-gray-300">Leve</span>
+                    <span class="px-2 py-0.5 rounded bg-party-purple/30 text-party-purple">Festa</span>
+                    <span class="px-2 py-0.5 rounded bg-party-pink/30 text-party-pink">+18 Polêmico</span>
+                </div>
+            </div>
+
+            <!-- Mode 2: Verdade ou Desafio -->
+            <div onclick="app.selectMode('verdadedesafio')" class="glass-card rounded-2xl p-5 border border-party-cyan/30 hover:border-party-cyan cursor-pointer transform hover:-translate-y-1 transition-all group relative overflow-hidden shadow-neon-cyan/20">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-party-cyan/10 rounded-full blur-xl group-hover:bg-party-cyan/20 transition-all"></div>
+                <div class="flex items-start justify-between relative z-10">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-party-cyan/20 border border-party-cyan/40 flex items-center justify-center text-party-cyan text-2xl group-hover:scale-110 transition-transform">
+                            🌶️
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-white group-hover:text-party-cyan transition-colors">Verdade ou Desafio</h3>
+                            <p class="text-xs text-gray-400">Cumpra os desafios loucos ou responda tudo!</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-500 group-hover:text-party-cyan group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div class="mt-3 flex space-x-2 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="px-2 py-0.5 rounded bg-party-cyan/20 text-party-cyan">Divertido</span>
+                    <span class="px-2 py-0.5 rounded bg-red-500/30 text-red-400">Picante</span>
+                </div>
+            </div>
+
+            <!-- Mode 3: Quem é Mais Provável -->
+            <div onclick="app.selectMode('maispo')" class="glass-card rounded-2xl p-5 border border-party-purple/30 hover:border-party-purple cursor-pointer transform hover:-translate-y-1 transition-all group relative overflow-hidden shadow-neon-purple/20">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-party-purple/10 rounded-full blur-xl group-hover:bg-party-purple/20 transition-all"></div>
+                <div class="flex items-start justify-between relative z-10">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 rounded-2xl bg-party-purple/20 border border-party-purple/40 flex items-center justify-center text-party-purple text-2xl group-hover:scale-110 transition-transform">
+                            👉
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black text-white group-hover:text-party-purple transition-colors">Quem é Mais Provável?</h3>
+                            <p class="text-xs text-gray-400">No 3, todo mundo aponta para o culpado!</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-500 group-hover:text-party-purple group-hover:translate-x-1 transition-all"></i>
+                </div>
+                <div class="mt-3 flex space-x-2 text-[10px] font-bold uppercase tracking-wider">
+                    <span class="px-2 py-0.5 rounded bg-party-purple/30 text-party-purple">Engraçado</span>
+                    <span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400">Grupo</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: GAMEPLAY CARD BOARD -->
+        <section id="gameView" class="w-full hidden flex-col items-center space-y-4">
+            
+            <!-- Top Controls in Game -->
+            <div class="w-full flex justify-between items-center">
+                <button onclick="app.showHome()" class="px-3 py-1.5 rounded-xl glass-panel text-xs text-gray-300 hover:text-white flex items-center space-x-1 transition-all border border-white/10">
+                    <i class="fas fa-arrow-left text-party-cyan"></i>
+                    <span>Modos</span>
+                </button>
+
+                <!-- Sub-category Filters (Pills) -->
+                <div id="subCategoryPills" class="flex space-x-1 bg-black/40 p-1 rounded-xl border border-white/5">
+                    <!-- Dynamic Subcategory Pills rendered via JS -->
+                </div>
+
+                <!-- Cards counter -->
+                <div class="px-2.5 py-1 rounded-xl bg-party-purple/20 border border-party-purple/30 text-[11px] font-bold text-party-purple">
+                    <span id="cardCounter">1</span> / <span id="totalCards">0</span>
+                </div>
+            </div>
+
+            <!-- Truth / Dare Toggle (Only for Verdade ou Desafio) -->
+            <div id="truthDareFilter" class="hidden w-full flex justify-center space-x-2">
+                <button onclick="app.setTruthDareType('todos')" id="filterAll" class="px-3 py-1 rounded-full text-xs font-bold bg-party-cyan text-black transition-all">
+                    Todos
+                </button>
+                <button onclick="app.setTruthDareType('verdade')" id="filterTruth" class="px-3 py-1 rounded-full text-xs font-bold glass-panel text-gray-300 transition-all">
+                    😇 Verdade
+                </button>
+                <button onclick="app.setTruthDareType('desafio')" id="filterDare" class="px-3 py-1 rounded-full text-xs font-bold glass-panel text-gray-300 transition-all">
+                    😈 Desafio
+                </button>
+            </div>
+
+            <!-- Main Interactive Card Deck -->
+            <div id="cardDeck" class="w-full perspective-1000 my-2">
+                <div id="activeCard" class="card-inner glass-card w-full min-h-[300px] max-h-[380px] rounded-3xl p-6 flex flex-col justify-between items-center text-center relative border-2 glow-pink cursor-pointer shadow-2xl">
+                    
+                    <!-- Top Badge inside card -->
+                    <div class="w-full flex justify-between items-center">
+                        <span id="cardBadge" class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-party-pink/20 text-party-pink border border-party-pink/40">
+                            Eu Nunca
+                        </span>
+                        <span id="cardIcon" class="text-2xl">
+                            🙈
+                        </span>
+                    </div>
+
+                    <!-- Main Text Question -->
+                    <div class="my-auto px-2 py-4">
+                        <p id="cardText" class="text-xl sm:text-2xl font-extrabold text-white leading-relaxed tracking-wide">
+                            Carregando carta...
+                        </p>
+                    </div>
+
+                    <!-- Touch Prompt / Bottom Indicator -->
+                    <div class="w-full pt-3 border-t border-white/10 flex justify-between items-center text-gray-400 text-[11px]">
+                        <span class="flex items-center space-x-1">
+                            <i class="fas fa-hand-pointer text-party-cyan"></i>
+                            <span>Toque para avançar</span>
+                        </span>
+                        <span id="cardTag" class="text-party-cyan font-semibold">#PartyGame</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Game Actions Bar -->
+            <div class="w-full space-y-3 pt-2">
+                <!-- Big Next Button -->
+                <button onclick="app.nextCard()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-party-pink via-party-purple to-party-cyan text-white font-black text-lg tracking-wider uppercase shadow-neon-pink animate-pulse-glow hover:opacity-95 active:scale-95 transition-all flex items-center justify-center space-x-2">
+                    <span>Próxima Carta</span>
+                    <i class="fas fa-forward"></i>
+                </button>
+
+                <!-- Secondary Share & Action Row -->
+                <div class="flex space-x-2">
+                    <button onclick="app.shareWhatsApp()" class="flex-1 py-2.5 rounded-xl glass-panel border border-green-500/40 text-green-400 hover:bg-green-500/10 text-xs font-bold flex items-center justify-center space-x-2 transition-all">
+                        <i class="fab fa-whatsapp text-base"></i>
+                        <span>Enviar no WhatsApp</span>
+                    </button>
+                    
+                    <button onclick="app.prevCard()" class="px-4 py-2.5 rounded-xl glass-panel border border-white/10 text-gray-300 hover:text-white text-xs font-bold flex items-center justify-center transition-all" title="Carta Anterior">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- MONETIZATION SLOT (Affiliate Links / AdSense Slot) -->
+        <div class="w-full mt-6 glass-panel rounded-2xl p-3 border border-amber-500/30 bg-amber-500/5">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] uppercase font-bold text-amber-400 tracking-wider flex items-center gap-1">
+                    <i class="fas fa-fire text-amber-400"></i> Esquenta da Galera
+                </span>
+                <span class="text-[9px] text-gray-500">Patrocinado</span>
+            </div>
+            
+            <!-- Affiliate Item Recommendations -->
+            <div class="grid grid-cols-2 gap-2 text-left">
+                <a href="https://shopee.com.br" target="_blank" rel="noopener" class="p-2 rounded-xl bg-black/40 hover:bg-black/60 border border-white/5 flex items-center space-x-2 transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-bold">
+                        🍺
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-[11px] font-bold text-gray-200 group-hover:text-amber-400 truncate">Copos Neon & Kit</p>
+                        <p class="text-[9px] text-gray-400">Ver na Shopee &rarr;</p>
+                    </div>
+                </a>
+
+                <a href="https://amazon.com.br" target="_blank" rel="noopener" class="p-2 rounded-xl bg-black/40 hover:bg-black/60 border border-white/5 flex items-center space-x-2 transition-all group">
+                    <div class="w-8 h-8 rounded-lg bg-party-cyan/20 text-party-cyan flex items-center justify-center text-xs font-bold">
+                        🔊
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-[11px] font-bold text-gray-200 group-hover:text-party-cyan truncate">Caixa de Som Pro</p>
+                        <p class="text-[9px] text-gray-400">Ver na Amazon &rarr;</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Cards Add Modal -->
+    <div id="customModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="glass-card w-full max-w-sm rounded-3xl p-6 border border-party-pink/40 space-y-4 relative shadow-2xl">
+            <button onclick="app.closeCustomModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+
+            <div class="text-center">
+                <span class="text-3xl">✏️</span>
+                <h3 class="text-xl font-extrabold text-white mt-1">Criar Pergunta Customizada</h3>
+                <p class="text-xs text-gray-400">Adicione suas próprias piadas ou verdades secretas da galera!</p>
+            </div>
+
+            <div class="space-y-3 text-left">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Selecione o Jogo</label>
+                    <select id="customGameSelect" class="w-full bg-black/60 border border-white/20 rounded-xl px-3 py-2 text-xs text-white focus:border-party-pink outline-none">
+                        <option value="eununca">Eu Nunca...</option>
+                        <option value="verdadedesafio">Verdade ou Desafio</option>
+                        <option value="maispo">Quem é Mais Provável</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Texto da Carta</label>
+                    <textarea id="customCardInput" rows="3" placeholder="Ex: Eu nunca esqueci o aniversário do meu melhor amigo..." class="w-full bg-black/60 border border-white/20 rounded-xl p-3 text-xs text-white focus:border-party-pink outline-none resize-none"></textarea>
+                </div>
+            </div>
+
+            <button onclick="app.saveCustomCard()" class="w-full py-3 rounded-xl bg-gradient-to-r from-party-pink to-party-purple text-white font-bold text-sm shadow-neon-pink hover:opacity-90 transition-all">
+                Salvar Carta no LocalStorage
+            </button>
+        </div>
+    </div>
+
+    <!-- Custom Notification Toast -->
+    <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl glass-card border border-party-cyan text-party-cyan text-xs font-bold opacity-0 transition-opacity pointer-events-none shadow-lg">
+        Notificação
+    </div>
+
+    <!-- Application Logic & Sound Engine -->
+    <script>
+        // PRESET DATABASE FOR GAME MODES
+        const GAME_DATA = {
+            eununca: {
+                title: "Eu Nunca",
+                icon: "🙈",
+                colorClass: "glow-pink",
+                badgeClass: "bg-party-pink/20 text-party-pink border-party-pink/40",
+                subCategories: {
+                    leve: [
+                        "Eu nunca me fingi de doente para faltar ao trabalho ou à escola.",
+                        "Eu nunca chorei vendo um filme de animação ou comercial de TV.",
+                        "Eu nunca mandei mensagem para a pessoa errada falando mal dela.",
+                        "Eu nunca comi comida do chão que passou mais de 5 segundos lá.",
+                        "Eu nunca esqueci o nome de alguém logo após essa pessoa se apresentar.",
+                        "Eu nunca fingi que conhecia uma banda famosa só para não passar vergonha.",
+                        "Eu nunca dormi no transporte público e passei do meu ponto final.",
+                        "Eu nunca culpei meu pet por um barulho ou cheiro ruim que eu fiz.",
+                        "Eu nunca tentei cortar meu próprio cabelo e me arrependi amargamente."
+                    ],
+                    festa: [
+                        "Eu nunca perdi o celular, documento ou carteira durante um rolê de festa.",
+                        "Eu nunca fiz um Pix por engano depois de tomar umas cervejas a mais.",
+                        "Eu nunca enviei um áudio embriagado de mais de 3 minutos no grupo.",
+                        "Eu nunca caí no meio da pista de dança na frente de todo mundo.",
+                        "Eu nunca fingi ter um relacionamento para me livrar de um xaveco chato.",
+                        "Eu nunca bebi no copo de outra pessoa por engano e fingi costume.",
+                        "Eu nunca prometi solene 'nunca mais vou beber' na ressaca do dia seguinte.",
+                        "Eu nunca saí escondido de um evento sem me despedir de ninguém.",
+                        "Eu nunca perdi a chave de casa e tive que esperar alguém acordar."
+                    ],
+                    polemico: [
+                        "Eu nunca mandei uma foto picante para a pessoa errada no WhatsApp.",
+                        "Eu nunca mandei mensagem para o ex no meio da madrugada.",
+                        "Eu nunca beijei duas pessoas totalmente diferentes na mesma noite.",
+                        "Eu nunca stalkeei o perfil do ex do meu atual crush até o ano de 2018.",
+                        "Eu nunca menti minha idade para conseguir ficar com alguém.",
+                        "Eu nunca fingi estar gostando de um beijo horrível só por educação.",
+                        "Eu nunca dei em cima do irmão/irmã ou do melhor amigo de um conhecido.",
+                        "Eu nunca fiquei com alguém só para fazer inveja a outra pessoa."
+                    ]
+                }
+            },
+            verdadedesafio: {
+                title: "Verdade ou Desafio",
+                icon: "🌶️",
+                colorClass: "glow-cyan",
+                badgeClass: "bg-party-cyan/20 text-party-cyan border-party-cyan/40",
+                subCategories: {
+                    divertido: [
+                        { type: "verdade", text: "Qual foi a mentira mais esdrúxula que você já contou para sair de um compromisso?" },
+                        { type: "verdade", text: "Se pudesse trocar de vida com alguém nesta roda por 24 horas, quem seria e por quê?" },
+                        { type: "verdade", text: "Qual foi a maior vergonha que você passou em um primeiro encontro?" },
+                        { type: "desafio", text: "Ligue para um amigo que não está aqui e tente vender um objeto imaginário por 1 minuto." },
+                        { type: "desafio", text: "Deixe a pessoa à sua direita mandar uma frase engraçada no seu grupo de família." },
+                        { type: "desafio", text: "Imite um animal marinho com muito drama e som por 30 segundos sem rir." }
+                    ],
+                    picante: [
+                        { type: "verdade", text: "Qual é o seu maior segredo ou fetiche que quase ninguém nesta roda sabe?" },
+                        { type: "verdade", text: "Quem desta roda você acharia mais atraente se estivessem perdidos em uma ilha deserta?" },
+                        { type: "verdade", text: "Qual foi o lugar mais ousado ou inusitado onde você já beijou alguém?" },
+                        { type: "desafio", text: "Sussurre algo engraçado ou provocante no ouvido da pessoa à sua esquerda." },
+                        { type: "desafio", text: "Faça uma dança performática de 15 segundos sem música no meio da roda." },
+                        { type: "desafio", text: "Troque uma peça de acessório (como jaqueta, anel ou chapéu) com quem está na sua frente." }
+                    ]
+                }
+            },
+            maispo: {
+                title: "Quem é Mais Provável",
+                icon: "👉",
+                colorClass: "glow-purple",
+                badgeClass: "bg-party-purple/20 text-party-purple border-party-purple/40",
+                subCategories: {
+                    grupo: [
+                        "Quem é mais provável de gastar todo o salário logo no primeiro dia do mês?",
+                        "Quem é mais provável de virar meme sem querer nas redes sociais?",
+                        "Quem é mais provável de esquecer o próprio aniversário ou o de um amigo próximo?",
+                        "Quem é mais provável de ir parar em uma festa VIP sem ter sido convidado?",
+                        "Quem é mais provável de dormir durante o ápice do seu filme favorito no cinema?",
+                        "Quem é mais provável de ser preso por uma idiotice totalmente inofensiva?",
+                        "Quem é mais provável de mandar mensagem para o ex depois da terceira taça de vinho?",
+                        "Quem é mais provável de se perder usando o GPS dentro do próprio bairro?",
+                        "Quem é mais provável de ganhar um reality show de convivência?"
+                    ]
+                }
+            }
+        };
+
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+            }
+
+            playFlip() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.08);
+
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.08);
+            }
+
+            playClick() {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.04);
+            }
+        }
+
+        class App {
+            constructor() {
+                this.sound = new SoundEngine();
+                this.currentModeKey = 'eununca';
+                this.currentSubCatKey = 'leve';
+                this.truthDareType = 'todos'; // 'todos', 'verdade', 'desafio'
+                
+                this.cardQueue = [];
+                this.currentIndex = 0;
+                this.history = [];
+
+                this.initElements();
+                this.bindEvents();
+                this.loadCustomCards();
+            }
+
+            initElements() {
+                this.homeView = document.getElementById('homeView');
+                this.gameView = document.getElementById('gameView');
+                this.activeCard = document.getElementById('activeCard');
+                this.cardText = document.getElementById('cardText');
+                this.cardBadge = document.getElementById('cardBadge');
+                this.cardIcon = document.getElementById('cardIcon');
+                this.subCategoryPills = document.getElementById('subCategoryPills');
+                this.truthDareFilter = document.getElementById('truthDareFilter');
+                this.cardCounter = document.getElementById('cardCounter');
+                this.totalCards = document.getElementById('totalCards');
+                this.toast = document.getElementById('toast');
+            }
+
+            bindEvents() {
+                // Card Click Event to advance
+                this.activeCard.addEventListener('click', () => {
+                    this.nextCard();
+                });
+
+                // Touch Swipe Events
+                let startX = 0;
+                this.activeCard.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].clientX;
+                }, { passive: true });
+
+                this.activeCard.addEventListener('touchend', (e) => {
+                    let endX = e.changedTouches[0].clientX;
+                    let diff = endX - startX;
+                    if (diff < -50) {
+                        this.nextCard();
+                    } else if (diff > 50) {
+                        this.prevCard();
+                    }
+                }, { passive: true });
+            }
+
+            loadCustomCards() {
+                const stored = localStorage.getItem('party_custom_cards');
+                if (stored) {
+                    try {
+                        const customCards = JSON.parse(stored);
+                        customCards.forEach(item => {
+                            if (GAME_DATA[item.mode]) {
+                                const sub = Object.keys(GAME_DATA[item.mode].subCategories)[0];
+                                if (sub) {
+                                    if (item.mode === 'verdadedesafio') {
+                                        GAME_DATA[item.mode].subCategories[sub].push({
+                                            type: 'verdade',
+                                            text: item.text + " (Custom)"
+                                        });
+                                    } else {
+                                        GAME_DATA[item.mode].subCategories[sub].push(item.text + " (Custom)");
+                                    }
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        console.error("Erro ao carregar cartas salvas.", e);
+                    }
+                }
+            }
+
+            showHome() {
+                this.sound.playClick();
+                this.gameView.classList.add('hidden');
+                this.gameView.classList.remove('flex');
+                this.homeView.classList.remove('hidden');
+            }
+
+            selectMode(modeKey) {
+                this.sound.playClick();
+                this.currentModeKey = modeKey;
+                const modeData = GAME_DATA[modeKey];
+
+                // Set default subcategory
+                this.currentSubCatKey = Object.keys(modeData.subCategories)[0];
+
+                this.homeView.classList.add('hidden');
+                this.gameView.classList.remove('hidden');
+                this.gameView.classList.add('flex');
+
+                this.renderSubCategoryPills();
+                this.prepareDeck();
+            }
+
+            renderSubCategoryPills() {
+                const modeData = GAME_DATA[this.currentModeKey];
+                const subKeys = Object.keys(modeData.subCategories);
+
+                this.subCategoryPills.innerHTML = subKeys.map(key => {
+                    const isActive = key === this.currentSubCatKey;
+                    const activeStyle = isActive ? 'bg-party-pink text-white font-extrabold shadow-sm' : 'text-gray-400 hover:text-white';
+                    return `
+                        <button onclick="app.changeSubCategory('${key}')" class="px-2.5 py-1 rounded-lg text-[11px] capitalize transition-all ${activeStyle}">
+                            ${key}
+                        </button>
+                    `;
+                }).join('');
+
+                // Show/Hide Truth or Dare filter row
+                if (this.currentModeKey === 'verdadedesafio') {
+                    this.truthDareFilter.classList.remove('hidden');
+                    this.truthDareFilter.classList.add('flex');
+                } else {
+                    this.truthDareFilter.classList.add('hidden');
+                    this.truthDareFilter.classList.remove('flex');
+                }
+            }
+
+            changeSubCategory(key) {
+                this.sound.playClick();
+                this.currentSubCatKey = key;
+                this.renderSubCategoryPills();
+                this.prepareDeck();
+            }
+
+            setTruthDareType(type) {
+                this.sound.playClick();
+                this.truthDareType = type;
+                
+                // Update button UI styles
+                ['All', 'Truth', 'Dare'].forEach(t => {
+                    const btn = document.getElementById(`filter${t}`);
+                    if (btn) {
+                        btn.className = 'px-3 py-1 rounded-full text-xs font-bold glass-panel text-gray-300 transition-all';
+                    }
+                });
+                const activeBtn = document.getElementById(`filter${type.charAt(0).toUpperCase() + type.slice(1)}`);
+                if (activeBtn) {
+                    activeBtn.className = 'px-3 py-1 rounded-full text-xs font-bold bg-party-cyan text-black transition-all';
+                }
+
+                this.prepareDeck();
+            }
+
+            prepareDeck() {
+                const modeData = GAME_DATA[this.currentModeKey];
+                let items = modeData.subCategories[this.currentSubCatKey] || [];
+
+                // Filter for Truth or Dare if applicable
+                if (this.currentModeKey === 'verdadedesafio' && this.truthDareType !== 'todos') {
+                    items = items.filter(item => item.type === this.truthDareType);
+                }
+
+                // Shuffle array (Fisher-Yates)
+                this.cardQueue = [...items];
+                for (let i = this.cardQueue.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [this.cardQueue[i], this.cardQueue[j]] = [this.cardQueue[j], this.cardQueue[i]];
+                }
+
+                this.currentIndex = 0;
+                this.history = [];
+                this.totalCards.textContent = this.cardQueue.length;
+                this.renderCurrentCard();
+            }
+
+            renderCurrentCard() {
+                if (this.cardQueue.length === 0) {
+                    this.cardText.textContent = "Nenhuma carta disponível nesta categoria.";
+                    return;
+                }
+
+                const currentItem = this.cardQueue[this.currentIndex];
+                const modeData = GAME_DATA[this.currentModeKey];
+
+                // Card Styling Updates
+                this.activeCard.className = `card-inner glass-card w-full min-h-[300px] max-h-[380px] rounded-3xl p-6 flex flex-col justify-between items-center text-center relative border-2 ${modeData.colorClass} cursor-pointer shadow-2xl`;
+                
+                this.cardBadge.className = `px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest ${modeData.badgeClass}`;
+                
+                if (this.currentModeKey === 'verdadedesafio' && typeof currentItem === 'object') {
+                    this.cardBadge.textContent = currentItem.type === 'verdade' ? '😇 Verdade' : '😈 Desafio';
+                    this.cardText.textContent = `"${currentItem.text}"`;
+                    this.cardIcon.textContent = currentItem.type === 'verdade' ? '😇' : '😈';
+                } else {
+                    this.cardBadge.textContent = `${modeData.title} • ${this.currentSubCatKey}`;
+                    this.cardText.textContent = `"${currentItem}"`;
+                    this.cardIcon.textContent = modeData.icon;
+                }
+
+                this.cardCounter.textContent = this.currentIndex + 1;
+            }
+
+            nextCard() {
+                if (this.cardQueue.length === 0) return;
+
+                this.sound.playFlip();
+
+                // Trigger Swipe Animation
+                this.activeCard.classList.add('card-swipe-next');
+                setTimeout(() => {
+                    this.activeCard.classList.remove('card-swipe-next');
+                }, 400);
+
+                this.history.push(this.currentIndex);
+                this.currentIndex = (this.currentIndex + 1) % this.cardQueue.length;
+                this.renderCurrentCard();
+            }
+
+            prevCard() {
+                if (this.history.length === 0) {
+                    this.showToast("Esta é a primeira carta do baralho!");
+                    return;
+                }
+
+                this.sound.playFlip();
+
+                // Trigger Swipe Prev Animation
+                this.activeCard.classList.add('card-swipe-prev');
+                setTimeout(() => {
+                    this.activeCard.classList.remove('card-swipe-prev');
+                }, 400);
+
+                this.currentIndex = this.history.pop();
+                this.renderCurrentCard();
+            }
+
+            toggleSound() {
+                this.sound.enabled = !this.sound.enabled;
+                const soundIcon = document.getElementById('soundIcon');
+                if (this.sound.enabled) {
+                    soundIcon.className = 'fas fa-volume-up text-party-cyan text-sm';
+                    this.showToast("Efeitos sonoros LIGADOS 🔊");
+                } else {
+                    soundIcon.className = 'fas fa-volume-mute text-gray-500 text-sm';
+                    this.showToast("Efeitos sonoros DESLIGADOS 🔇");
+                }
+            }
+
+            shareWhatsApp() {
+                this.sound.playClick();
+                const cardText = this.cardText.textContent;
+                const modeTitle = GAME_DATA[this.currentModeKey].title;
+
+                const message = `🔥 *Jogos de Galera - Party Night* 🔥\n\n*${modeTitle}:*\n${cardText}\n\nVenha jogar no nosso esquenta! 🚀`;
+                const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+                window.open(url, '_blank');
+            }
+
+            openCustomModal() {
+                this.sound.playClick();
+                document.getElementById('customModal').classList.remove('hidden');
+            }
+
+            closeCustomModal() {
+                this.sound.playClick();
+                document.getElementById('customModal').classList.add('hidden');
+            }
+
+            saveCustomCard() {
+                const gameSelect = document.getElementById('customGameSelect').value;
+                const input = document.getElementById('customCardInput').value.trim();
+
+                if (!input) {
+                    this.showToast("Digite o texto da carta antes de salvar!");
+                    return;
+                }
+
+                const newCard = { mode: gameSelect, text: input };
+                const stored = localStorage.getItem('party_custom_cards');
+                let customList = stored ? JSON.parse(stored) : [];
+                customList.push(newCard);
+                localStorage.setItem('party_custom_cards', JSON.stringify(customList));
+
+                // Add to current loaded memory
+                const sub = Object.keys(GAME_DATA[gameSelect].subCategories)[0];
+                if (gameSelect === 'verdadedesafio') {
+                    GAME_DATA[gameSelect].subCategories[sub].push({
+                        type: 'verdade',
+                        text: input + " (Custom)"
+                    });
+                } else {
+                    GAME_DATA[gameSelect].subCategories[sub].push(input + " (Custom)");
+                }
+
+                document.getElementById('customCardInput').value = '';
+                this.closeCustomModal();
+                this.showToast("Carta personalizada salva com sucesso! 🎉");
+
+                if (this.currentModeKey === gameSelect) {
+                    this.prepareDeck();
+                }
+            }
+
+            showToast(msg) {
+                this.toast.textContent = msg;
+                this.toast.classList.remove('opacity-0');
+                this.toast.classList.add('opacity-100');
+                setTimeout(() => {
+                    this.toast.classList.remove('opacity-100');
+                    this.toast.classList.add('opacity-0');
+                }, 2500);
+            }
+        }
+
+        // Initialize Application
+        let app;
+        window.addEventListener('DOMContentLoaded', () => {
+            app = new App();
+        });
+    </script>
+</body>
+</html>
