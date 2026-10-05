@@ -350,6 +350,9 @@
             <button onclick="app.saveCustomCard()" class="w-full py-3 rounded-xl bg-gradient-to-r from-party-pink to-party-purple text-white font-bold text-sm shadow-neon-pink hover:opacity-90 transition-all">
                 Salvar Carta
             </button>
+            <button onclick="app.resetCustomCards()" class="w-full mt-3 text-xs text-red-400 hover:text-red-300 underline transition-colors">
+                Apagar minhas perguntas
+            </button>
         </div>
     </div>
 
@@ -805,8 +808,18 @@
                 if (this.currentModeKey === gameSelect) {
                     this.prepareDeck();
                 }
-            }
+            },
 
+            resetCustomCards() {
+                if (confirm("Quer mesmo apagar todas as cartas personalizadas criadas neste celular?")) {
+                    localStorage.removeItem('party_custom_cards');
+                    this.showToast("Perguntas removidas com sucesso! 🗑️");
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                }
+            },
+                
             showToast(msg) {
                 this.toast.textContent = msg;
                 this.toast.classList.remove('opacity-0');
