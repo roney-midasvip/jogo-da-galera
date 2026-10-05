@@ -327,7 +327,7 @@
 
             <div class="text-center">
                 <span class="text-3xl">✏️</span>
-                <h3 class="text-xl font-extrabold text-white mt-1">Criar Pergunta Customizada</h3>
+                <h3 class="text-xl font-extrabold text-white mt-1">Criar Pergunta</h3>
                 <p class="text-xs text-gray-400">Adicione suas próprias piadas ou verdades secretas da galera!</p>
             </div>
 
@@ -570,10 +570,10 @@
                                     if (item.mode === 'verdadedesafio') {
                                         GAME_DATA[item.mode].subCategories[sub].push({
                                             type: 'verdade',
-                                            text: item.text + " (Custom)"
+                                            text: item.text
                                         });
                                     } else {
-                                        GAME_DATA[item.mode].subCategories[sub].push(item.text + " (Custom)");
+                                        GAME_DATA[item.mode].subCategories[sub].push(item.text)");
                                     }
                                 }
                             }
@@ -792,10 +792,10 @@
                 if (gameSelect === 'verdadedesafio') {
                     GAME_DATA[gameSelect].subCategories[sub].push({
                         type: 'verdade',
-                        text: input + " (Custom)"
+                        text: input
                     });
                 } else {
-                    GAME_DATA[gameSelect].subCategories[sub].push(input + " (Custom)");
+                    GAME_DATA[gameSelect].subCategories[sub].push(input)");
                 }
 
                 document.getElementById('customCardInput').value = '';
